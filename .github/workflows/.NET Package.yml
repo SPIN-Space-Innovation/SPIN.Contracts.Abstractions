@@ -1,0 +1,23 @@
+name: .NET Package
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Package
+      run: dotnet pack --configuration Release
+    - name: Publish
+      run: dotnet nuget push "src/SPIN.Contracts.Abstractions/bin/Release/SPIN.Contracts.Abstractions.0.1.0.nupkg" --source "SPIN-github" -k "${{ secrets.PACKAGE }}"
